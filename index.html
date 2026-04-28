@@ -215,7 +215,7 @@ cta:'A'
 var CAL='https://calendar.app.google/K99ip6z75aRBgyrc7';
 var IT='https://www.instagram.com/theraclinica';
 var IG='https://www.instagram.com/geizeliima';
-var SH='https://script.google.com/macros/s/AKfycbxGVJz50AtK4rnugzeW94-847KhNDqb7YmWPU6cFAj1AVZhHuF-eb9KzoSBFXTfU-xd/exec';
+var SH='https://script.google.com/macros/s/AKfycbx6fIWETIr9_2f_f7WcrmmMlk1cJi_kfjmBngDYlcXmiDM_dgtax0h1wpq2NbqRHFxrXw/exec';
 var DISC='Este teste é uma ferramenta de rastreio clínico — não um diagnóstico. Apenas um profissional especializado pode avaliar com precisão.';
 var IGS='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none"/></svg>';
 
@@ -319,7 +319,7 @@ function verRes(){
   xhr.open('POST',SH,true);
   xhr.setRequestHeader('Content-Type','application/json');
   xhr.timeout=8000;
-  try{ xhr.send(JSON.stringify({nome:n,email:e,telefone:t,score:SC,resultado:ch,prof:RQ.prof,terapia:RQ.terapia,auto:RQ.auto})); }catch(x){}
+  try{ xhr.send(JSON.stringify({teste:'TDAH',nome:n,email:e,telefone:t,score:SC,resultado:ch,prof:RQ.prof,terapia:RQ.terapia,auto:RQ.auto})); }catch(x){}
   setTimeout(function(){
     document.getElementById('ov').className='';
     rR(ch, n.split(' ')[0]);
@@ -346,15 +346,15 @@ function rR(ch,nm){
     '<div class="stit">Comportamentos que se repetem</div>'+
     '<ul class="bl">'+bh+'</ul>'+
     '<div class="ctab"><p>'+r.conc+'</p>'+cta+'</div>'+
+    '<div class="igw">'+
+      '<a href="'+IG+'" target="_blank" class="igb">'+IGS+' @geizeliima</a>'+
+      '<a href="'+IT+'" target="_blank" class="igb">'+IGS+' @theraclinica</a>'+
+    '</div>'+
     '<button class="bd" onclick="gPDF()">⬇ BAIXAR MEU RESULTADO EM PDF</button>'+
     '<div class="grod">'+
       '<img src="'+GI+'" alt="Geize Lima">'+
       '<span class="gnm">Geize Lima</span>'+
       '<span class="gcp">Psicóloga e Fundadora da Thera Clínica — CRP 05/35120</span>'+
-    '</div>'+
-    '<div class="igw">'+
-      '<a href="'+IG+'" target="_blank" class="igb">'+IGS+' @geizeliima</a>'+
-      '<a href="'+IT+'" target="_blank" class="igb">'+IGS+' @theraclinica</a>'+
     '</div>'+
     '<p class="disc">'+DISC+'</p>';
 }
@@ -403,7 +403,7 @@ function gPDF(){
   y=48;
   // RESULTADO
   ln(r.badge,12,true,'#6B1535','C');sp(1);
-  ln((NU?NU+', ':'')+r.nome,12,true,'#0D1B2A','C');sp(1);
+  var NUcap=NU?NU.split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();}).join(' '):''; ln((NUcap?NUcap+', ':'')+r.nome,12,true,'#0D1B2A','C');sp(1);
   ln('Pontuacao: '+SC+' de 30',10,false,'#666','C');sp(4);dv();
   // SINAIS
   ln('SINAIS QUE VOCE PODE ESTAR SENTINDO',10,true,'#6B1535');sp(2);
@@ -416,14 +416,29 @@ function gPDF(){
   // CTA
   ln('O QUE FAZER AGORA',10,true,'#6B1535');sp(2);
   ln(r.concPDF,10,false,'#111');sp(6);
-  // RODAPE FOTO
+  // BOTAO AGENDAMENTO no PDF
+  sp(2);
+  doc.setFillColor('#6B1535');
+  doc.rect(M,y,W-M*2,10,'F');
+  doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor('#fff');
+  doc.text('AGENDAR SESSAO GRATUITA: calendar.app.google/K99ip6z75aRBgyrc7',W/2,y+6.5,{align:'center'});
+  y+=16;
+
+  // RODAPE - nova pagina se nao couber
+  if(y>220){doc.addPage();y=20;}
+  dv();
+  // Foto centralizada
   doc.addImage(GI,'JPEG',W/2-11,y,22,22);y+=26;
   doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor('#0D1B2A');
   doc.text('Geize Lima',W/2,y,{align:'center'});y+=5;
   doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor('#666');
-  doc.text('Psicologa e Fundadora da Thera Clinica - CRP 05/35120',W/2,y,{align:'center'});y+=6;
+  doc.text('Psicologa e Fundadora da Thera Clinica - CRP 05/35120',W/2,y,{align:'center'});y+=8;
+  // Instagram
   doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor('#833ab4');
-  doc.text('instagram.com/geizeliima   |   instagram.com/theraclinica',W/2,y,{align:'center'});y+=8;
+  doc.text('Instagram: @geizeliima',W/2,y,{align:'center'});y+=6;
+  doc.text('Instagram: @theraclinica',W/2,y,{align:'center'});y+=8;
+  doc.link(M,y-20,W-M*2,14,{url:'https://www.instagram.com/geizeliima'});
+  doc.link(M,y-14,W-M*2,14,{url:'https://www.instagram.com/theraclinica'});
   dv();
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor('#777');
   var dl=doc.splitTextToSize('Este teste e uma ferramenta de rastreio clinico - nao um diagnostico. Apenas um profissional especializado pode avaliar com precisao.',W-M*2);
