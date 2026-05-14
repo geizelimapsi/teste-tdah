@@ -87,6 +87,19 @@ ul.bl li{font-size:14px;line-height:1.6;color:#0D1B2A;background:#fff;padding:10
 #ov span{font-size:14px;color:#6B1535}
 @media(max-width:500px){.bx{padding:16px 12px 40px}.pt,.dq,h2{font-size:18px}}
 </style>
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','1641765340236159');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1641765340236159&ev=PageView&noscript=1"/></noscript>
+<!-- Fim Meta Pixel -->
 </head>
 <body>
 <div id="ov"><div class="sp"></div><span>Analisando...</span></div>
@@ -315,11 +328,14 @@ function verRes(){
   NU=n;
   var ch=SC<=15?'r1':SC<=22?'r2':'r3';
   document.getElementById('ov').className='on';
-  var xhr=new XMLHttpRequest();
-  xhr.open('POST',SH,true);
-  xhr.setRequestHeader('Content-Type','application/json');
-  xhr.timeout=8000;
-  try{ xhr.send(JSON.stringify({teste:'TDAH',nome:n,email:e,telefone:t,score:SC,resultado:ch,prof:RQ.prof,terapia:RQ.terapia,auto:RQ.auto})); }catch(x){}
+  try{
+    fetch(SH,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({teste:'TDAH',nome:n,email:e,telefone:t,score:SC,resultado:ch,prof:RQ.prof,terapia:RQ.terapia,auto:RQ.auto})
+    });
+  }catch(x){}
   setTimeout(function(){
     document.getElementById('ov').className='';
     rR(ch, n.split(' ')[0]);
@@ -328,10 +344,13 @@ function verRes(){
 }
 
 function rR(ch,nm){
+  if((ch==='r2'||ch==='r3') && typeof fbq!=='undefined'){
+    fbq('track','Lead');
+  }
   var r=RES[ch];
   var cta=r.cta==='I'
     ?'<a href="'+IG+'" target="_blank" class="bca">SEGUIR @GEIZELIIMA</a>'
-    :'<a href="'+CAL+'" target="_blank" class="bca">AGENDAR SESSÃO GRATUITA</a>';
+    :'<a href="'+CAL+'" target="_blank" class="bca" onclick="if(typeof fbq!==\'undefined\') fbq(\'track\',\'Schedule\')">AGENDAR SESSÃO GRATUITA</a>';
   var ph='', bh='';
   for(var i=0;i<r.pens.length;i++) ph+='<li>'+r.pens[i]+'</li>';
   for(var j=0;j<r.comp.length;j++) bh+='<li>'+r.comp[j]+'</li>';
